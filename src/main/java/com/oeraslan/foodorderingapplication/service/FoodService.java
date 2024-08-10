@@ -2,6 +2,7 @@ package com.oeraslan.foodorderingapplication.service;
 
 import com.oeraslan.foodorderingapplication.dto.FoodCreateOrUpdateDto;
 import com.oeraslan.foodorderingapplication.dto.FoodResponseDto;
+import com.oeraslan.foodorderingapplication.enums.Category;
 
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface FoodService {
     FoodResponseDto getFoodById(Long id);
 
     List<FoodResponseDto> getAllFoods();
+
+    List<FoodResponseDto> getFoodsByCategory(Category category);
 }

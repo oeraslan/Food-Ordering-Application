@@ -2,6 +2,7 @@ package com.oeraslan.foodorderingapplication.service.impl;
 
 import com.oeraslan.foodorderingapplication.dto.FoodCreateOrUpdateDto;
 import com.oeraslan.foodorderingapplication.dto.FoodResponseDto;
+import com.oeraslan.foodorderingapplication.enums.Category;
 import com.oeraslan.foodorderingapplication.repository.FoodRepository;
 import com.oeraslan.foodorderingapplication.repository.entity.Food;
 import com.oeraslan.foodorderingapplication.repository.mapper.FoodMapper;
@@ -63,4 +64,12 @@ public class FoodServiceImpl implements FoodService {
 
         return foodRepository.findAll().stream().map(FoodMapper::foodToFoodResponseDto).toList();
     }
+
+    @Override
+    public List<FoodResponseDto> getFoodsByCategory(Category category) {
+        log.info("[{}][getFoodsByCategory] -> request category: {}", this.getClass().getSimpleName(), category);
+
+        return foodRepository.findAllByCategory(category).stream().map(FoodMapper::foodToFoodResponseDto).toList();
+    }
+
 }

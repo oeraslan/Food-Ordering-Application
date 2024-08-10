@@ -1,6 +1,7 @@
 package com.oeraslan.foodorderingapplication.controller;
 
 import com.oeraslan.foodorderingapplication.dto.FoodCreateOrUpdateDto;
+import com.oeraslan.foodorderingapplication.enums.Category;
 import com.oeraslan.foodorderingapplication.service.FoodService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,5 +63,11 @@ public class FoodController {
         return ResponseEntity.ok().body(foodService.getAllFoods());
     }
 
+    @GetMapping("/category/{category}")
+    public ResponseEntity<Object> getFoodsByCategory(@PathVariable String category) {
+        log.info("[{}][getFoodsByCategory] -> getting foods by category", this.getClass().getSimpleName());
+
+        return ResponseEntity.ok().body(foodService.getFoodsByCategory(Category.valueOf(category)));
+    }
 
 }
