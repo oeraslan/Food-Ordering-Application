@@ -9,7 +9,7 @@ public interface OrderService {
 
     void createOrder(OrderCreateOrUpdateDto orderCreateDto);
 
-    void updateOrder(OrderCreateOrUpdateDto orderUpdateDto);
+    void updateOrder(Long id,OrderCreateOrUpdateDto orderUpdateDto);
 
     void deleteOrder(Long id);
 

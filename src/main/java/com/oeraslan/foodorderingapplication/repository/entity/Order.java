@@ -2,13 +2,11 @@ package com.oeraslan.foodorderingapplication.repository.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.oeraslan.foodorderingapplication.enums.Status;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +15,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -31,12 +29,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "dinnerTable_id")
-    private DinnerTable dinnerTableId;
+    private Long dinnerTableId;
 
-    @ManyToMany
-    private List<Food> foodList;
+    @ElementCollection
+    private Map<Long, Integer> foodList;
 
     private Double totalPrice;
 
