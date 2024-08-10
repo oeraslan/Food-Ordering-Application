@@ -61,31 +61,6 @@ public class DinnerTableServiceImpl implements DinnerTableService {
         log.info("[{}][deleteDinnerTable] ->  dinner table deleted", this.getClass().getSimpleName());
     }
 
-    @Override
-    public void reserveDinnerTable(Long id, DinnerTableReserveDto dinnerTableReserveDto) {
-        log.info("[{}][reserveDinnerTable] -> request id: {}", this.getClass().getSimpleName(), id);
-
-        DinnerTable dinnerTable = dinnerTableRepository.findById(id).orElseThrow(() -> new RuntimeException("Dinner table not found"));
-        dinnerTable.setStatus(Status.RESERVED);
-        dinnerTable.setUpdatedDate(new Date());
-        dinnerTable.setOrderIds(dinnerTableReserveDto.getOrderIds());
-        dinnerTableRepository.save(dinnerTable);
-
-        log.info("[{}][reserveDinnerTable] -> dinner table reserved", this.getClass().getSimpleName());
-    }
-
-    @Override
-    public void cancelDinnerTableReservation(Long id) {
-        log.info("[{}][cancelDinnerTableReservation] -> request id: {}", this.getClass().getSimpleName(), id);
-
-        DinnerTable dinnerTable = dinnerTableRepository.findById(id).orElseThrow(() -> new RuntimeException("Dinner table not found"));
-        dinnerTable.setStatus(Status.NOT_RESERVED);
-        dinnerTable.setUpdatedDate(new Date());
-        dinnerTable.setOrderIds(List.of());
-        dinnerTableRepository.save(dinnerTable);
-
-        log.info("[{}][cancelDinnerTableReservation] -> dinner table reservation canceled", this.getClass().getSimpleName());
-    }
 
     @Override
     public DinnerTableResponseDto getDinnerTableById(Long id) {
