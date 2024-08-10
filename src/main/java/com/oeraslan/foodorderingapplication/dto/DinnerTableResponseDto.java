@@ -11,8 +11,9 @@ import java.util.List;
 public class DinnerTableResponseDto {
 
     private Long dinnerTableId;
-    private List<Long> orderId;
+    private List<Long> orderIds;
     private Status status;
+    private String createdDate;
     private String updatedDate;
     private Double totalPrice;
 }

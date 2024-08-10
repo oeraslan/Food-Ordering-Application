@@ -6,5 +6,7 @@ public enum Status {
     READY,
     DELIVERED,
     CANCELLED,
-    PAID
+    PAID,
+    NOT_RESERVED,
+    RESERVED
 }

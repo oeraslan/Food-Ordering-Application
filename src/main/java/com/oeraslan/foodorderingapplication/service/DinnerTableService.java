@@ -9,11 +9,11 @@ public interface DinnerTableService {
 
     void createDinnerTable(int numberOfTables);
 
-    void updateDinnerTable(DinnerTableReserveDto dinnerTableReserveDto);
+    void updateDinnerTable(Long id, DinnerTableReserveDto dinnerTableReserveDto);
 
     void deleteDinnerTable(Long id);
 
-    void reserveDinnerTable(DinnerTableReserveDto dinnerTableReserveDto);
+    void reserveDinnerTable(Long id, DinnerTableReserveDto dinnerTableReserveDto);
 
     void cancelDinnerTableReservation(Long id);
 

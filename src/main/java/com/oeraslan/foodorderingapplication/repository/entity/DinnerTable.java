@@ -2,15 +2,15 @@ package com.oeraslan.foodorderingapplication.repository.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.oeraslan.foodorderingapplication.enums.Status;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,6 +19,7 @@ import java.util.List;
 
 @Entity
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "dinner_table", schema = "food_ordering_application")
@@ -28,9 +29,8 @@ public class DinnerTable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
-    @JoinColumn(name = "order_id")
-    private List<Order> orderId;
+    @ElementCollection
+    private List<Long> orderIds;
 
     private Status status;
 

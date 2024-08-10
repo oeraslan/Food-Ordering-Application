@@ -1,5 +1,6 @@
 package com.oeraslan.foodorderingapplication.dto;
 
+import com.oeraslan.foodorderingapplication.enums.Status;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +10,7 @@ import java.util.List;
 @Data
 public class DinnerTableReserveDto {
 
-    private Long dinnerTableId;
-    private List<Long> orderId;
+    private List<Long> orderIds;
+    private Status status;
 
 }
