@@ -6,6 +6,7 @@ import com.oeraslan.foodorderingapplication.enums.Status;
 import com.oeraslan.foodorderingapplication.repository.entity.Order;
 
 import java.util.Date;
+import java.util.Optional;
 
 public interface OrderMapper {
 
@@ -21,10 +22,15 @@ public interface OrderMapper {
     };
 
     static Order updateOrder(Order order, OrderCreateOrUpdateDto orderDto) {
-        order.setDinnerTableId(orderDto.getDinnerTableId());
-        order.setFoodList(orderDto.getFoods());
-        order.setStatus(Status.RECEIVED);
+        Optional.ofNullable(orderDto.getDinnerTableId())
+                .ifPresent(order::setDinnerTableId);
+        Optional.ofNullable(orderDto.getFoods())
+                .filter(foods -> !foods.isEmpty())
+                .ifPresent(order::setFoodList);
+        Optional.ofNullable(orderDto.getStatus())
+                .ifPresent(order::setStatus);
         order.setUpdatedDate(new Date());
+
         return order;
     };
 
