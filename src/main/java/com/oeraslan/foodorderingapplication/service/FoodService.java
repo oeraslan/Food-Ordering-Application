@@ -9,7 +9,7 @@ public interface FoodService {
 
     void createFood(FoodCreateOrUpdateDto foodCreateDto);
 
-    void updateFood(FoodCreateOrUpdateDto foodUpdateDto);
+    void updateFood(Long id, FoodCreateOrUpdateDto foodUpdateDto);
 
     void deleteFood(Long id);
 
