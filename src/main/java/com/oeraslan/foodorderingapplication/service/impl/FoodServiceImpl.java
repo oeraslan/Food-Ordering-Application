@@ -3,6 +3,10 @@ package com.oeraslan.foodorderingapplication.service.impl;
 import com.oeraslan.foodorderingapplication.dto.FoodCreateOrUpdateDto;
 import com.oeraslan.foodorderingapplication.dto.FoodResponseDto;
 import com.oeraslan.foodorderingapplication.enums.Category;
+import com.oeraslan.foodorderingapplication.exception.exceptions.FoodAlreadyDeletedException;
+import com.oeraslan.foodorderingapplication.exception.exceptions.FoodNotCreatedException;
+import com.oeraslan.foodorderingapplication.exception.exceptions.FoodNotFoundException;
+import com.oeraslan.foodorderingapplication.exception.exceptions.FoodNotUpdatedException;
 import com.oeraslan.foodorderingapplication.repository.FoodRepository;
 import com.oeraslan.foodorderingapplication.repository.entity.Food;
 import com.oeraslan.foodorderingapplication.repository.mapper.FoodMapper;
@@ -24,21 +28,37 @@ public class FoodServiceImpl implements FoodService {
     public void createFood(FoodCreateOrUpdateDto foodCreateDto) {
         log.info("[{}][createFood] -> request: {}", this.getClass().getSimpleName(), foodCreateDto);
 
-        Food food = FoodMapper.createFood(foodCreateDto);
-        foodRepository.save(food);
+        try {
 
-        log.info("[{}][createFood] -> food created: {}", this.getClass().getSimpleName(), food);
+            Food food = FoodMapper.createFood(foodCreateDto);
+            foodRepository.save(food);
+
+            log.info("[{}][createFood] -> food created: {}", this.getClass().getSimpleName(), food);
+        } catch (Exception e) {
+
+            log.error("[{}][createFood] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
+            throw new FoodNotCreatedException("Food not created");
+        }
+
     }
 
     @Override
     public void updateFood(Long id, FoodCreateOrUpdateDto foodUpdateDto) {
         log.info("[{}][updateFood] -> request: {}", this.getClass().getSimpleName(), foodUpdateDto);
 
-        Food food = foodRepository.findById(id).orElseThrow(() -> new RuntimeException("Food not found"));
-        Food updatedFood = FoodMapper.updateFood(foodUpdateDto, food);
-        foodRepository.save(updatedFood);
+        Food food = foodRepository.findById(id).orElseThrow(() -> new FoodNotFoundException("Food not found with id: " + id));
 
-        log.info("[{}][updateFood] -> food updated: {}", this.getClass().getSimpleName(), updatedFood);
+        try {
+
+            Food updatedFood = FoodMapper.updateFood(foodUpdateDto, food);
+            foodRepository.save(updatedFood);
+
+            log.info("[{}][updateFood] -> food updated: {}", this.getClass().getSimpleName(), updatedFood);
+        } catch (Exception e) {
+
+            log.error("[{}][updateFood] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
+            throw new FoodNotUpdatedException("Food not updated with id: " + id);
+        }
 
     }
 
@@ -46,16 +66,31 @@ public class FoodServiceImpl implements FoodService {
     public void deleteFood(Long id) {
         log.info("[{}][deleteFood] -> request id: {}", this.getClass().getSimpleName(), id);
 
-        Food food = foodRepository.findById(id).orElseThrow(() -> new RuntimeException("Food not found"));
-        food.setDeleted(true);
-        foodRepository.save(food);
+        Food food = foodRepository.findById(id).orElseThrow(() -> new FoodNotFoundException("Food not found with id: " + id));
+
+        if (food.isDeleted()) {
+            throw new FoodAlreadyDeletedException("Food already deleted with id: " + id);
+        }
+
+        try {
+
+            food.setDeleted(true);
+            foodRepository.save(food);
+
+            log.info("[{}][deleteFood] -> food deleted: {}", this.getClass().getSimpleName(), food);
+        } catch (Exception e) {
+
+            log.error("[{}][deleteFood] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
+            throw new FoodNotUpdatedException("Food not deleted with id: " + id);
+        }
+
     }
 
     @Override
     public FoodResponseDto getFoodById(Long id) {
         log.info("[{}][getFoodById] -> request id: {}", this.getClass().getSimpleName(), id);
 
-        return FoodMapper.foodToFoodResponseDto(foodRepository.findById(id).orElseThrow(() -> new RuntimeException("Food not found")));
+        return FoodMapper.foodToFoodResponseDto(foodRepository.findById(id).orElseThrow(() -> new FoodNotFoundException("Food not found with id: " + id)));
     }
 
     @Override
