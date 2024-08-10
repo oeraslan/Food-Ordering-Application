@@ -37,7 +37,7 @@ public class FoodServiceImpl implements FoodService {
         } catch (Exception e) {
 
             log.error("[{}][createFood] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
-            throw new FoodNotCreatedException("Food not created");
+            throw new FoodNotCreatedException("Food not created: " + e.getMessage());
         }
 
     }
@@ -46,7 +46,7 @@ public class FoodServiceImpl implements FoodService {
     public void updateFood(Long id, FoodCreateOrUpdateDto foodUpdateDto) {
         log.info("[{}][updateFood] -> request: {}", this.getClass().getSimpleName(), foodUpdateDto);
 
-        Food food = foodRepository.findById(id).orElseThrow(() -> new FoodNotFoundException("Food not found with id: " + id));
+        Food food = findFoodById(id);
 
         try {
 
@@ -57,7 +57,7 @@ public class FoodServiceImpl implements FoodService {
         } catch (Exception e) {
 
             log.error("[{}][updateFood] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
-            throw new FoodNotUpdatedException("Food not updated with id: " + id);
+            throw new FoodNotUpdatedException("Food not updated with id: " + id + ", error: " + e.getMessage());
         }
 
     }
@@ -66,7 +66,7 @@ public class FoodServiceImpl implements FoodService {
     public void deleteFood(Long id) {
         log.info("[{}][deleteFood] -> request id: {}", this.getClass().getSimpleName(), id);
 
-        Food food = foodRepository.findById(id).orElseThrow(() -> new FoodNotFoundException("Food not found with id: " + id));
+        Food food = findFoodById(id);
 
         if (food.isDeleted()) {
             throw new FoodAlreadyDeletedException("Food already deleted with id: " + id);
@@ -81,7 +81,7 @@ public class FoodServiceImpl implements FoodService {
         } catch (Exception e) {
 
             log.error("[{}][deleteFood] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
-            throw new FoodNotUpdatedException("Food not deleted with id: " + id);
+            throw new FoodNotUpdatedException("Food not deleted with id: " + id + ", error: " + e.getMessage());
         }
 
     }
@@ -90,7 +90,7 @@ public class FoodServiceImpl implements FoodService {
     public FoodResponseDto getFoodById(Long id) {
         log.info("[{}][getFoodById] -> request id: {}", this.getClass().getSimpleName(), id);
 
-        return FoodMapper.foodToFoodResponseDto(foodRepository.findById(id).orElseThrow(() -> new FoodNotFoundException("Food not found with id: " + id)));
+        return FoodMapper.foodToFoodResponseDto(findFoodById(id));
     }
 
     @Override
@@ -105,6 +105,10 @@ public class FoodServiceImpl implements FoodService {
         log.info("[{}][getFoodsByCategory] -> request category: {}", this.getClass().getSimpleName(), category);
 
         return foodRepository.findAllByCategory(category).stream().map(FoodMapper::foodToFoodResponseDto).toList();
+    }
+
+    private Food findFoodById(Long id) {
+        return foodRepository.findById(id).orElseThrow(() -> new FoodNotFoundException("Food not found with id: " + id));
     }
 
 }
