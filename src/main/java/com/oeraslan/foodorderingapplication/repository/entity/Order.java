@@ -22,7 +22,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "order", schema = "food_ordering_application")
+@Table(name = "orders", schema = "food_ordering_application")
 public class Order {
 
     @Id
