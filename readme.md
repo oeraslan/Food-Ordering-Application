@@ -34,3 +34,4 @@ The Food Ordering Application is a Spring Boot-based RESTful API that allows use
     ```
 3. Update the `application.properties` file with your MySQL username and password.
 4. Swagger UI can be accessed at `http://{your_api:port}/swagger-ui.html`. Generally it is `http://localhost:8080/swagger-ui.html`
+5. Postman collection can be found in the [PostmanCollections](/PostmanCollections) directory.
