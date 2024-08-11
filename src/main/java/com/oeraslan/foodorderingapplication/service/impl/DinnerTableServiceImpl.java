@@ -4,6 +4,10 @@ import com.oeraslan.foodorderingapplication.dto.DinnerTableReserveDto;
 import com.oeraslan.foodorderingapplication.dto.DinnerTableResponseDto;
 import com.oeraslan.foodorderingapplication.dto.OrderResponseDto;
 import com.oeraslan.foodorderingapplication.enums.Status;
+import com.oeraslan.foodorderingapplication.exception.exceptions.DinnerTableAlreadyDeletedException;
+import com.oeraslan.foodorderingapplication.exception.exceptions.DinnerTableNotCreatedException;
+import com.oeraslan.foodorderingapplication.exception.exceptions.DinnerTableNotFoundException;
+import com.oeraslan.foodorderingapplication.exception.exceptions.DinnerTableNotUpdatedException;
 import com.oeraslan.foodorderingapplication.repository.DinnerTableRepository;
 import com.oeraslan.foodorderingapplication.repository.entity.DinnerTable;
 import com.oeraslan.foodorderingapplication.service.DinnerTableService;
@@ -28,37 +32,67 @@ public class DinnerTableServiceImpl implements DinnerTableService {
     public void createDinnerTable(int numberOfTables) {
         log.info("[{}][createDinnerTable] -> numberOfTables: {}", this.getClass().getSimpleName(), numberOfTables);
 
-        for (int i = 0; i < numberOfTables; i++) {
-            DinnerTable dinnerTable = new DinnerTable();
-            dinnerTable.setStatus(Status.NOT_RESERVED);
-            dinnerTable.setCreatedDate(new Date());
-            dinnerTable.setUpdatedDate(new Date());
-            dinnerTableRepository.save(dinnerTable);
+        try {
+            for (int i = 0; i < numberOfTables; i++) {
+                DinnerTable dinnerTable = new DinnerTable();
+                dinnerTable.setStatus(Status.NOT_RESERVED);
+                dinnerTable.setCreatedDate(new Date());
+                dinnerTable.setUpdatedDate(new Date());
+                dinnerTableRepository.save(dinnerTable);
+            }
+
+            log.info("[{}][createDinnerTable] -> {} tables created", this.getClass().getSimpleName(), numberOfTables);
+        } catch (Exception e) {
+
+            log.error("[{}][createDinnerTable] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
+            throw new DinnerTableNotCreatedException("Dinner table not created: " + e.getMessage());
         }
 
-        log.info("[{}][createDinnerTable] -> {} tables created", this.getClass().getSimpleName(), numberOfTables);
+
     }
 
     @Override
     public void updateDinnerTable(Long id, DinnerTableReserveDto dinnerTableReserveDto) {
         log.info("[{}][updateDinnerTable] -> request id: {}", this.getClass().getSimpleName(), id);
 
-        DinnerTable dinnerTable = dinnerTableRepository.findById(id).orElseThrow(() -> new RuntimeException("Dinner table not found"));
-        dinnerTable.setStatus(dinnerTableReserveDto.getStatus());
-        dinnerTable.setUpdatedDate(new Date());
-        dinnerTable.setOrderIds(dinnerTableReserveDto.getOrderIds());
-        dinnerTableRepository.save(dinnerTable);
+        DinnerTable dinnerTable = findDinnerTableById(id);
 
-        log.info("[{}][updateDinnerTable] -> dinner table updated", this.getClass().getSimpleName());
+        try {
+            dinnerTable.setStatus(dinnerTableReserveDto.getStatus());
+            dinnerTable.setUpdatedDate(new Date());
+            dinnerTable.setOrderIds(dinnerTableReserveDto.getOrderIds());
+            dinnerTableRepository.save(dinnerTable);
+
+            log.info("[{}][updateDinnerTable] -> dinner table updated", this.getClass().getSimpleName());
+        } catch (Exception e) {
+
+            log.error("[{}][updateDinnerTable] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
+            throw new DinnerTableNotUpdatedException("Dinner table not updated: " + e.getMessage());
+        }
+
     }
 
     @Override
     public void deleteDinnerTable(Long id) {
         log.info("[{}][deleteDinnerTable] -> request id: {}", this.getClass().getSimpleName(), id);
 
-        dinnerTableRepository.deleteById(id);
+        DinnerTable dinnerTable = findDinnerTableById(id);
 
-        log.info("[{}][deleteDinnerTable] ->  dinner table deleted", this.getClass().getSimpleName());
+        if (dinnerTable.isDeleted()) {
+            throw new DinnerTableAlreadyDeletedException("Dinner table already deleted with id: " + id);
+        }
+
+        try {
+            dinnerTable.setDeleted(true);
+            dinnerTableRepository.save(dinnerTable);
+
+            log.info("[{}][deleteDinnerTable] ->  dinner table deleted", this.getClass().getSimpleName());
+        } catch (Exception e) {
+
+            log.error("[{}][deleteDinnerTable] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
+            throw new DinnerTableNotUpdatedException("Dinner table not updated with id: " + id + ", error: " + e.getMessage());
+        }
+
     }
 
 
@@ -66,7 +100,7 @@ public class DinnerTableServiceImpl implements DinnerTableService {
     public DinnerTableResponseDto getDinnerTableById(Long id) {
         log.info("[{}][getDinnerTableById] -> request id: {}", this.getClass().getSimpleName(), id);
 
-        DinnerTable dinnerTable = dinnerTableRepository.findById(id).orElseThrow(() -> new RuntimeException("Dinner table not found"));
+        DinnerTable dinnerTable = findDinnerTableById(id);
 
         return DinnerTableResponseDto.builder()
                 .dinnerTableId(dinnerTable.getId())
@@ -118,6 +152,10 @@ public class DinnerTableServiceImpl implements DinnerTableService {
                 .map(orderService::getOrderById)
                 .mapToDouble(OrderResponseDto::getTotalPrice)
                 .sum();
+    }
+
+    private DinnerTable findDinnerTableById (Long id) {
+        return dinnerTableRepository.findById(id).orElseThrow(() -> new DinnerTableNotFoundException("Dinner table not found"));
     }
 
 }
