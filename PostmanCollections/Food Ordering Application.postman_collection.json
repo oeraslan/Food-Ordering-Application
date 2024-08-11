@@ -1,0 +1,232 @@
+{
+	"info": {
+		"_postman_id": "e77cb03e-e19b-4981-bb24-f25ae7dcf59b",
+		"name": "Food Ordering Application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "13809685"
+	},
+	"item": [
+		{
+			"name": "Dinner Table API",
+			"item": [
+				{
+					"name": "Create Dinner Tables",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "http://localhost:8080/api/dinnerTable/create/5"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Table By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/dinnerTable/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Table",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/dinnerTable/all"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Available Tables",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/dinnerTable/available"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Table By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/dinnerTable/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Dinner Table ",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderIds\": [],\r\n    \"status\": \"RESERVED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/dinnerTable/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order API",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"dinnerTableId\": 2,\r\n  \"foods\": {\r\n    \"1\":12,\r\n    \"2\":6\r\n  },\r\n  \"status\": \"RECEIVED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/order"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/order/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"dinnerTableId\": 1,\r\n  \"foods\": {\r\n    \"1\":10,\r\n    \"2\":6\r\n  },\r\n  \"status\": \"RECEIVED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/order/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Order By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/order/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/order/all"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/order/active"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Food API",
+			"item": [
+				{
+					"name": "Create Food",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Ayran\",\r\n  \"price\": 5,\r\n  \"description\": \"Soğuk Ayran\",\r\n  \"category\": \"DRINKS\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/food"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Food By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/food/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Food By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/food/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Food",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/food/all"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Foods By Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/food/category/main_course"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Food By Id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Ayran\",\r\n  \"price\": 10,\r\n  \"description\": \"Soğuk Ekşi Ayran\",\r\n  \"category\": \"DRINKS\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/food/2"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
