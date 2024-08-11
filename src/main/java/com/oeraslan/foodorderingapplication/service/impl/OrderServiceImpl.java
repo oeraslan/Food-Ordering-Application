@@ -2,6 +2,9 @@ package com.oeraslan.foodorderingapplication.service.impl;
 
 import com.oeraslan.foodorderingapplication.dto.OrderCreateOrUpdateDto;
 import com.oeraslan.foodorderingapplication.dto.OrderResponseDto;
+import com.oeraslan.foodorderingapplication.exception.exceptions.OrderAlreadyDeletedException;
+import com.oeraslan.foodorderingapplication.exception.exceptions.OrderNotFoundException;
+import com.oeraslan.foodorderingapplication.exception.exceptions.OrderNotUpdatedException;
 import com.oeraslan.foodorderingapplication.repository.FoodRepository;
 import com.oeraslan.foodorderingapplication.repository.OrderRepository;
 import com.oeraslan.foodorderingapplication.repository.entity.Order;
@@ -28,41 +31,70 @@ public class OrderServiceImpl implements OrderService {
     public void createOrder(OrderCreateOrUpdateDto orderCreateDto) {
         log.info("[{}][createOrder] -> request: {}", this.getClass().getSimpleName(), orderCreateDto);
 
-        Order order = OrderMapper.createOrder(orderCreateDto);
-        order.setTotalPrice(calculateTotalPrice(orderCreateDto.getFoods()));
-        orderRepository.save(order);
+        try {
 
-        log.info("[{}][createOrder] -> order created: {}", this.getClass().getSimpleName(), order);
+            Order order = OrderMapper.createOrder(orderCreateDto);
+            order.setTotalPrice(calculateTotalPrice(orderCreateDto.getFoods()));
+            orderRepository.save(order);
+
+            log.info("[{}][createOrder] -> order created: {}", this.getClass().getSimpleName(), order);
+        } catch (Exception e) {
+
+            log.error("[{}][createOrder] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
+            throw new OrderNotFoundException("Order not created: " + e.getMessage());
+        }
+
     }
 
     @Override
     public void updateOrder(Long id, OrderCreateOrUpdateDto orderUpdateDto) {
         log.info("[{}][updateOrder] -> request: {}", this.getClass().getSimpleName(), orderUpdateDto);
 
-        Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
-        Order updatedOrder = OrderMapper.updateOrder(order, orderUpdateDto);
-        updatedOrder.setTotalPrice(calculateTotalPrice(orderUpdateDto.getFoods()));
-        orderRepository.save(updatedOrder);
+        Order order = findOrderById(id);
 
-        log.info("[{}][updateOrder] -> order updated: {}", this.getClass().getSimpleName(), updatedOrder);
+        try {
+
+            Order updatedOrder = OrderMapper.updateOrder(order, orderUpdateDto);
+            updatedOrder.setTotalPrice(calculateTotalPrice(orderUpdateDto.getFoods()));
+            orderRepository.save(updatedOrder);
+
+            log.info("[{}][updateOrder] -> order updated: {}", this.getClass().getSimpleName(), updatedOrder);
+        } catch (Exception e) {
+
+            log.error("[{}][updateOrder] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
+            throw new OrderNotUpdatedException("Order not updated with id: " + id + ", error: " + e.getMessage());
+        }
+
     }
 
     @Override
     public void deleteOrder(Long id) {
         log.info("[{}][deleteOrder] -> request id: {}", this.getClass().getSimpleName(), id);
 
-        Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
-        order.setDeleted(true);
-        orderRepository.save(order);
+        Order order = findOrderById(id);
 
-        log.info("[{}][deleteOrder] -> order deleted: {}", this.getClass().getSimpleName(), order);
+        if (order.isDeleted()) {
+            throw new OrderAlreadyDeletedException("Order already deleted with id: " + id);
+        }
+
+        try {
+            order.setDeleted(true);
+            orderRepository.save(order);
+
+            log.info("[{}][deleteOrder] -> order deleted: {}", this.getClass().getSimpleName(), order);
+        } catch (Exception e) {
+
+            log.error("[{}][deleteOrder] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
+            throw new OrderNotUpdatedException("Order not deleted with id: " + id + ", error: " + e.getMessage());
+        }
+
     }
 
     @Override
     public OrderResponseDto getOrderById(Long id) {
         log.info("[{}][getOrderById] -> request id: {}", this.getClass().getSimpleName(), id);
 
-        Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = findOrderById(id);
 
         return OrderMapper.orderToOrderResponseDto(order);
     }
@@ -81,10 +113,14 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.getActiveOrders().stream().map(OrderMapper::orderToOrderResponseDto).toList();
     }
 
-    private double calculateTotalPrice(Map<Long,Integer> foods) {
+    private double calculateTotalPrice(Map<Long, Integer> foods) {
         AtomicReference<Double> totalPrice = new AtomicReference<>((double) 0);
         foods.forEach((foodId, quantity) -> foodRepository.findById(foodId).ifPresent(food -> totalPrice.updateAndGet(v -> v + food.getPrice() * quantity)));
         return totalPrice.get();
+    }
+
+    private Order findOrderById(Long id) {
+        return orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + id));
     }
 
 }
