@@ -6,5 +6,14 @@ public enum Category {
     DESSERT,
     SALAD,
     SNACKS,
-    SOUP
+    SOUP;
+
+    public static Category fromString(String category) {
+        for (Category c : Category.values()) {
+            if (c.name().equalsIgnoreCase(category)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant " + Category.class.getCanonicalName() + "." + category);
+    }
 }

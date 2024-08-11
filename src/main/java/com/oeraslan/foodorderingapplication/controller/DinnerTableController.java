@@ -41,7 +41,7 @@ public class DinnerTableController {
         dinnerTableService.updateDinnerTable(id, dinnerTableReserveDto);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteDinnerTable(@PathVariable Long id) {
         log.info("[{}][deleteDinnerTable] -> deleting dinner table", this.getClass().getSimpleName());

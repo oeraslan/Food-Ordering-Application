@@ -67,7 +67,7 @@ public class FoodController {
     public ResponseEntity<Object> getFoodsByCategory(@PathVariable String category) {
         log.info("[{}][getFoodsByCategory] -> getting foods by category", this.getClass().getSimpleName());
 
-        return ResponseEntity.ok().body(foodService.getFoodsByCategory(Category.valueOf(category)));
+        return ResponseEntity.ok().body(foodService.getFoodsByCategory(Category.fromString(category)));
     }
 
 }

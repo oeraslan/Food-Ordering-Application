@@ -3,6 +3,8 @@ package com.oeraslan.foodorderingapplication.repository.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.oeraslan.foodorderingapplication.enums.Category;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,6 +35,7 @@ public class Food {
 
     private Double price;
 
+    @Enumerated(EnumType.STRING)
     private Category category;
 
     //Todo add image field : @Lob private byte[] image;
