@@ -1,14 +1,20 @@
 package com.oeraslan.foodorderingapplication.service.impl;
 
+import com.oeraslan.foodorderingapplication.dto.DinnerTableReserveDto;
 import com.oeraslan.foodorderingapplication.dto.OrderCreateOrUpdateDto;
 import com.oeraslan.foodorderingapplication.dto.OrderResponseDto;
+import com.oeraslan.foodorderingapplication.enums.Category;
+import com.oeraslan.foodorderingapplication.enums.Status;
 import com.oeraslan.foodorderingapplication.exception.exceptions.OrderAlreadyDeletedException;
 import com.oeraslan.foodorderingapplication.exception.exceptions.OrderNotFoundException;
 import com.oeraslan.foodorderingapplication.exception.exceptions.OrderNotUpdatedException;
 import com.oeraslan.foodorderingapplication.repository.FoodRepository;
 import com.oeraslan.foodorderingapplication.repository.OrderRepository;
+import com.oeraslan.foodorderingapplication.repository.entity.DinnerTable;
 import com.oeraslan.foodorderingapplication.repository.entity.Order;
+import com.oeraslan.foodorderingapplication.repository.mapper.DinnerTableMapper;
 import com.oeraslan.foodorderingapplication.repository.mapper.OrderMapper;
+import com.oeraslan.foodorderingapplication.service.DinnerTableService;
 import com.oeraslan.foodorderingapplication.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +33,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final FoodRepository foodRepository;
 
+    private final DinnerTableService dinnerTableService;
+
     @Override
     public void createOrder(OrderCreateOrUpdateDto orderCreateDto) {
         log.info("[{}][createOrder] -> request: {}", this.getClass().getSimpleName(), orderCreateDto);
@@ -35,7 +43,9 @@ public class OrderServiceImpl implements OrderService {
 
             Order order = OrderMapper.createOrder(orderCreateDto);
             order.setTotalPrice(calculateTotalPrice(orderCreateDto.getFoods()));
-            orderRepository.save(order);
+            Order response = orderRepository.save(order);
+
+            updateDinnerTable(orderCreateDto.getDinnerTableId(), response.getId(), Status.RESERVED);
 
             log.info("[{}][createOrder] -> order created: {}", this.getClass().getSimpleName(), order);
         } catch (Exception e) {
@@ -45,6 +55,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
     }
+
 
     @Override
     public void updateOrder(Long id, OrderCreateOrUpdateDto orderUpdateDto) {
@@ -57,6 +68,8 @@ public class OrderServiceImpl implements OrderService {
             Order updatedOrder = OrderMapper.updateOrder(order, orderUpdateDto);
             updatedOrder.setTotalPrice(calculateTotalPrice(orderUpdateDto.getFoods()));
             orderRepository.save(updatedOrder);
+
+            updateDinnerTable(orderUpdateDto.getDinnerTableId(), id, orderUpdateDto.getStatus());
 
             log.info("[{}][updateOrder] -> order updated: {}", this.getClass().getSimpleName(), updatedOrder);
         } catch (Exception e) {
@@ -121,6 +134,24 @@ public class OrderServiceImpl implements OrderService {
 
     private Order findOrderById(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + id));
+    }
+
+    private void updateDinnerTable(Long tableId, Long orderId, Status status) {
+        log.info("[{}][updateDinnerTable] -> tableId: {}, orderId: {}", this.getClass().getSimpleName(), tableId, orderId);
+
+        DinnerTable dinnerTable = dinnerTableService.findDinnerTableById(tableId);
+        List<Long> orderIds = dinnerTable.getOrderIds();
+        if (!orderIds.contains(orderId)) {
+            orderIds.add(orderId);
+        }
+        dinnerTable.setOrderIds(orderIds);
+        dinnerTable.setStatus(status);
+
+        DinnerTableReserveDto dinnerTableReserveDto = DinnerTableMapper.dinnerTableToDinnerTableReserveDto(dinnerTable);
+
+        dinnerTableService.updateDinnerTable(tableId, dinnerTableReserveDto);
+
+        log.info("[{}][updateDinnerTable] -> dinner table updated: {}", this.getClass().getSimpleName(), dinnerTable);
     }
 
 }

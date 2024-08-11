@@ -14,6 +14,8 @@ import com.oeraslan.foodorderingapplication.service.DinnerTableService;
 import com.oeraslan.foodorderingapplication.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -26,7 +28,9 @@ public class DinnerTableServiceImpl implements DinnerTableService {
 
     private final DinnerTableRepository dinnerTableRepository;
 
-    private final OrderService orderService;
+    @Autowired
+    @Lazy
+    private OrderService orderService;
 
     @Override
     public void createDinnerTable(int numberOfTables) {
@@ -147,15 +151,16 @@ public class DinnerTableServiceImpl implements DinnerTableService {
                 );
     }
 
+    @Override
+    public DinnerTable findDinnerTableById(Long id) {
+        return dinnerTableRepository.findById(id).orElseThrow(() -> new DinnerTableNotFoundException("Dinner table not found"));
+    }
+
     private Double getTotalPrice(List<Long> orderIds) {
         return orderIds.stream()
                 .map(orderService::getOrderById)
                 .mapToDouble(OrderResponseDto::getTotalPrice)
                 .sum();
-    }
-
-    private DinnerTable findDinnerTableById (Long id) {
-        return dinnerTableRepository.findById(id).orElseThrow(() -> new DinnerTableNotFoundException("Dinner table not found"));
     }
 
 }

@@ -2,6 +2,7 @@ package com.oeraslan.foodorderingapplication.service;
 
 import com.oeraslan.foodorderingapplication.dto.DinnerTableReserveDto;
 import com.oeraslan.foodorderingapplication.dto.DinnerTableResponseDto;
+import com.oeraslan.foodorderingapplication.repository.entity.DinnerTable;
 
 import java.util.List;
 
@@ -18,5 +19,7 @@ public interface DinnerTableService {
     List<DinnerTableResponseDto> getAllDinnerTables();
 
     List<DinnerTableResponseDto> getDinnerTablesNotReserved();
+
+    DinnerTable findDinnerTableById(Long id);
 
 }
