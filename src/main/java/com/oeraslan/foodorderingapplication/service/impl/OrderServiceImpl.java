@@ -6,6 +6,7 @@ import com.oeraslan.foodorderingapplication.dto.OrderResponseDto;
 import com.oeraslan.foodorderingapplication.enums.Category;
 import com.oeraslan.foodorderingapplication.enums.Status;
 import com.oeraslan.foodorderingapplication.exception.exceptions.OrderAlreadyDeletedException;
+import com.oeraslan.foodorderingapplication.exception.exceptions.OrderNotCreatedException;
 import com.oeraslan.foodorderingapplication.exception.exceptions.OrderNotFoundException;
 import com.oeraslan.foodorderingapplication.exception.exceptions.OrderNotUpdatedException;
 import com.oeraslan.foodorderingapplication.repository.FoodRepository;
@@ -51,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
 
             log.error("[{}][createOrder] -> error: {}", this.getClass().getSimpleName(), e.getMessage());
-            throw new OrderNotFoundException("Order not created: " + e.getMessage());
+            throw new OrderNotCreatedException("Order not created: " + e.getMessage());
         }
 
     }
