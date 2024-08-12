@@ -12,7 +12,6 @@ import com.oeraslan.foodorderingapplication.repository.DinnerTableRepository;
 import com.oeraslan.foodorderingapplication.repository.entity.DinnerTable;
 import com.oeraslan.foodorderingapplication.service.DinnerTableService;
 import com.oeraslan.foodorderingapplication.service.OrderService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -23,10 +22,10 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class DinnerTableServiceImpl implements DinnerTableService {
 
-    private final DinnerTableRepository dinnerTableRepository;
+    @Autowired
+    private DinnerTableRepository dinnerTableRepository;
 
     @Autowired
     @Lazy
