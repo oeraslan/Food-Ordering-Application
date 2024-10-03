@@ -3,8 +3,8 @@ FROM maven:3.8-openjdk-17-slim AS build
 
 # Uygulama kodunu ekle
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
+COPY ../pom.xml .
+COPY ../src ./src
 
 # Maven ile uygulamayı derleyip jar üret
 RUN mvn clean package -DskipTests
