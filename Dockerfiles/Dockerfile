@@ -4,7 +4,7 @@ FROM maven:3.8-openjdk-17 AS build
 # Uygulama kodunu ekle
 WORKDIR /app
 COPY pom.xml .
-COPY src ./src
+COPY src /src
 
 # Maven ile uygulamayı derleyip jar üret
 RUN mvn clean package -DskipTests
