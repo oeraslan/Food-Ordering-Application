@@ -1,21 +1,20 @@
-# Use an official OpenJDK runtime as a parent image
+# Aşama 1: Build aşaması
+FROM maven:3.8-openjdk-17 AS build
+
+# Uygulama kodunu ekle
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+
+# Maven ile uygulamayı derleyip jar üret
+RUN mvn clean package -DskipTests
+
+# Aşama 2: Çalıştırma aşaması
 FROM openjdk:17-jdk-slim
 
-# Set the working directory in the container
+# Uygulama dosyasını kopyala
 WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 
-# Copy the project's pom.xml and source code to the container
-COPY ../pom.xml .
-COPY ../src ./src
-
-# Install Maven and package the application
-RUN apt-get update && \
-    apt-get install -y maven && \
-    mvn clean package -DskipTests && \
-    rm -rf /var/lib/apt/lists/*
-
-# Copy the packaged jar file to the container
-COPY ../target/food-ordering-application-0.0.1-SNAPSHOT.jar app.jar
-
-# Run the jar file
+# Uygulamanın çalıştırılması
 ENTRYPOINT ["java", "-jar", "app.jar"]
